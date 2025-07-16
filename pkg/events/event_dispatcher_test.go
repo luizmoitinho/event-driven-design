@@ -6,8 +6,17 @@ import (
 	"time"
 
 	"github.com/luizmoitinho/events_utils/pkg/events"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
+
+type MockHandler struct {
+	mock.Mock
+}
+
+func (m *MockHandler) Handle(event events.EventInterface) {
+	m.Called(event)
+}
 
 type TestEvent struct {
 	Name    string
@@ -111,4 +120,15 @@ func (s *EventDispatcherTestSuite) TestEventDispatcher_Clear() {
 
 	s.Equal(0, s.eventDispatcher.Length(s.event.GetName()))
 	s.Equal(0, s.eventDispatcher.Length(s.event2.GetName()))
+}
+
+func (s *EventDispatcherTestSuite) TestEventDispatch_Dispatch() {
+	eventHandler := &MockHandler{}
+	eventHandler.On("Handle", &s.event)
+
+	s.eventDispatcher.Register(s.event.GetName(), eventHandler)
+	s.eventDispatcher.Dispatch(&s.event)
+
+	eventHandler.AssertExpectations(s.T())
+	eventHandler.AssertNumberOfCalls(s.T(), "Handle", 1)
 }

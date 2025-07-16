@@ -33,8 +33,14 @@ func (ed *EventDispatcher) Unregister(eventName string, event EventHandlerInterf
 	return nil
 }
 
-func (ed *EventDispatcher) Dispatch(event EventHandlerInterface) error {
-	return nil
+func (ed *EventDispatcher) Dispatch(event EventInterface) error {
+	if _, ok := ed.handlers[event.GetName()]; ok {
+		for _, handler := range ed.handlers[event.GetName()] {
+			handler.Handle(event)
+			return nil
+		}
+	}
+	return errors.New("event not found")
 }
 
 func (ed *EventDispatcher) Has(eventName string, handler EventHandlerInterface) bool {

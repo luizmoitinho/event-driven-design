@@ -132,3 +132,27 @@ func (s *EventDispatcherTestSuite) TestEventDispatch_Dispatch() {
 	eventHandler.AssertExpectations(s.T())
 	eventHandler.AssertNumberOfCalls(s.T(), "Handle", 1)
 }
+
+func (s *EventDispatcherTestSuite) TestEventDispatch_Unregister() {
+	//Event one
+	s.eventDispatcher.Register(s.event.GetName(), &s.handler)
+	s.eventDispatcher.Register(s.event.GetName(), &s.handler2)
+
+	//Event two
+	s.eventDispatcher.Register(s.event2.GetName(), &s.handler3)
+
+	err := s.eventDispatcher.Unregister(s.event.GetName(), &s.handler)
+	s.Nil(err)
+	s.Equal(1, s.eventDispatcher.Length(s.event.GetName()))
+	s.Equal(false, s.eventDispatcher.Has(s.event.GetName(), &s.handler))
+	s.Equal(true, s.eventDispatcher.Has(s.event.GetName(), &s.handler2))
+
+	err = s.eventDispatcher.Unregister(s.event.GetName(), &s.handler2)
+	s.Nil(err)
+	s.Equal(0, s.eventDispatcher.Length(s.event.GetName()))
+	s.Equal(false, s.eventDispatcher.Has(s.event.GetName(), &s.handler2))
+
+	err = s.eventDispatcher.Unregister(s.event2.GetName(), &s.handler3)
+	s.Nil(err)
+	s.Equal(0, s.eventDispatcher.Length(s.event2.GetName()))
+}

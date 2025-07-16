@@ -29,8 +29,16 @@ func (ed *EventDispatcher) Register(eventName string, handler EventHandlerInterf
 	return nil
 }
 
-func (ed *EventDispatcher) Unregister(eventName string, event EventHandlerInterface) error {
-	return nil
+func (ed *EventDispatcher) Unregister(eventName string, handler EventHandlerInterface) error {
+	if _, ok := ed.handlers[eventName]; ok {
+		for i, h := range ed.handlers[eventName] {
+			if h == handler {
+				ed.handlers[eventName] = append(ed.handlers[eventName][:i], ed.handlers[eventName][i+1:]...)
+				return nil
+			}
+		}
+	}
+	return errors.New("event not found")
 }
 
 func (ed *EventDispatcher) Dispatch(event EventInterface) error {

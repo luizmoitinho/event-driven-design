@@ -18,5 +18,5 @@ type EventDispatcherInterface interface {
 	Unregister(eventName string, event EventHandlerInterface) error
 	Has(eventName string, event EventHandlerInterface) bool
 	Length(eventName string) int
-	Clear() error
+	Clear()
 }

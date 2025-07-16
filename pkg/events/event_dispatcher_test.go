@@ -84,3 +84,31 @@ func (s *EventDispatcherTestSuite) TestEventDispatcher_Register_WithSamHandler()
 
 	s.Equal(1, s.eventDispatcher.Length(s.event.GetName()))
 }
+
+func (s *EventDispatcherTestSuite) TestEventDispatcher_Clear() {
+	//Event one
+	err := s.eventDispatcher.Register(s.event.GetName(), &s.handler)
+	s.Nil(err)
+	s.Equal(true, s.eventDispatcher.Has(s.event.GetName(), &s.handler))
+	s.Equal(1, s.eventDispatcher.Length(s.event.GetName()))
+
+	err = s.eventDispatcher.Register(s.event.GetName(), &s.handler2)
+	s.Nil(err)
+	s.Equal(true, s.eventDispatcher.Has(s.event.GetName(), &s.handler2))
+	s.Equal(2, s.eventDispatcher.Length(s.event.GetName()))
+
+	//Event two
+	err = s.eventDispatcher.Register(s.event2.GetName(), &s.handler3)
+	s.Nil(err)
+	s.Equal(1, s.eventDispatcher.Length(s.event2.GetName()))
+
+	//act
+	s.eventDispatcher.Clear()
+
+	s.Nil(err)
+	s.Equal(false, s.eventDispatcher.Has(s.event.GetName(), &s.handler))
+	s.Equal(false, s.eventDispatcher.Has(s.event2.GetName(), &s.handler2))
+
+	s.Equal(0, s.eventDispatcher.Length(s.event.GetName()))
+	s.Equal(0, s.eventDispatcher.Length(s.event2.GetName()))
+}

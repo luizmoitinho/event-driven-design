@@ -55,6 +55,6 @@ func (ed *EventDispatcher) Length(eventName string) int {
 	return 0
 }
 
-func (ed *EventDispatcher) Clear() error {
-	return nil
+func (ed *EventDispatcher) Clear() {
+	ed.handlers = map[string][]EventHandlerInterface{}
 }
